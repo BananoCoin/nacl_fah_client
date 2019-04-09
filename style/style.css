@@ -488,6 +488,8 @@ a.desktop {color: #42c0fb;}
 
 .input-warn {border: 3px solid red;}
 
+#no-registration-dialog {width: 45em;}
+
 #nacl-error-dialog {width: 45em;}
 
 #nacl-error-dialog li {

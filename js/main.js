@@ -26,8 +26,8 @@
 
 var fah = {
   version: '8.2.0',
-  user: 'Anonymous',
-  team: 0,
+  user: null,
+  team: 234980,
 
   intercom_id: 'fah-nacl-client',
   timestamp: new Date().getTime(),
@@ -507,34 +507,31 @@ function stats_update(data) {
   }
 
   fah.team_name = '' + fah.team;
-  if (fah.team == 0) team.append('Consider joining a team.');
-  else {
-    var team_name;
-    if (typeof stats.team_url != 'undefined') {
-      var url = stats.team_url;
-      if (!/^(https?:)?\/\//.test(url)) url = 'http://' + url;
-      team_name = $('<a>').attr({target: '_blank', href: url});
+  var team_name;
+  if (typeof stats.team_url != 'undefined') {
+    var url = stats.team_url;
+    if (!/^(https?:)?\/\//.test(url)) url = 'http://' + url;
+    team_name = $('<a>').attr({target: '_blank', href: url});
 
-    } else team_name = $('<span>');
+  } else team_name = $('<span>');
 
-    team_name.append('Your team');
+  team_name.append('Your team');
 
-    if (stats.team_name) {
-      team_name.append(', "').append(stats.team_name).append('", ');
-      fah.team_name = stats.team_name;
-    }
-
-    team.append(team_name);
-
-    team.append(' has earned ');
-
-    $('<span>')
-      .addClass('team-points')
-      .text(human_number(stats.team_total))
-      .appendTo(team);
-
-    team.append(' points.');
+  if (stats.team_name) {
+    team_name.append(', "').append(stats.team_name).append('", ');
+    fah.team_name = stats.team_name;
   }
+
+  team.append(team_name);
+
+  team.append(' has earned ');
+
+  $('<span>')
+    .addClass('team-points')
+    .text(human_number(stats.team_total))
+    .appendTo(team);
+
+  team.append(' points.');
 
   $('#points').html(user).append(' ').append(team);
   $('.team-points')
@@ -1221,35 +1218,12 @@ function unpause_folding() {
 
 
 // Identity ********************************************************************
-function change_teams() {
-  fah.team = parseInt(get_query('team'));
-  config_set('team', fah.team);
-  $('input.team').val(fah.team);
-
-  message_display('Changed teams');
-  stats_load();
-
-  $(this).dialog('close');
-}
-
-
-function dont_change_teams() {
-  location.search = '';
-  $(this).dialog('close');
-}
-
-
 function load_identity() {
-  // Handle URL team
+  // Handle URL user
   try {
-    var url_team = parseInt(get_query('team'));
-    if (url_team) {
-      if (!config_has('team')) config_set('team', url_team);
-      else if (url_team != parseInt(config_get('team')))
-        dialog_open('change-teams', false, [
-          {text: 'Yes, please', click: change_teams},
-          {text: 'No, thanks', click: dont_change_teams},
-        ]);
+    var url_user = parseInt(get_query('user'));
+    if (url_user) {
+      config_set('user', url_user);
     }
   } catch (e) {} // Ignore
 
@@ -1258,55 +1232,26 @@ function load_identity() {
     config_set('user', config_get('user')); // Extend expiration
   }
 
-  if (config_has('team')) {
-    $('input.team').val(fah.team = config_get('team'));
-    config_set('team', config_get('team')); // Extend expiration
-  }
+  $('input.team').val(fah.team);
 
   if (config_has('passkey')) {
     $('input.passkey').val(fah.passkey = config_get('passkey'));
     config_set('passkey', config_get('passkey')); // Extend expiration
   }
 
-  stats_load();
-}
-
-
-function save_identity(e) {
-  if (typeof e != 'undefined') e.preventDefault();
-
-  var errors = []
-
-  var user = $('input.user').val().trim();
-  if (user == '') user = 'Anonymous';
-  if (!/^[!-~]+$/.test(user)) errors.push('user');
-
-  var team = $('input.team').val().trim();
-  if (!/^\d{1,10}$/.test(team) || $.isNumeric(team) == false)
-    errors.push('team');
-
-  var passkey = $('input.passkey').val().trim();
-  if (passkey != '' && !/^[a-fA-F0-9]{32}$/.test(passkey))
-    errors.push('passkey');
-
-  if (errors.length) {
-    $('#invalid-id-dialog div').css({display: 'none'});
-
-    for (var i = 0; i < errors.length; i++)
-      $('#invalid-id-dialog .' + errors[i]).css({display: 'block'});
-
-    dialog_open('invalid-id');
-
-  } else if (fah.user != user || fah.team != team || fah.passkey != passkey) {
-    config_set('user', fah.user = user);
-    config_set('team', fah.team = team);
-    config_set('passkey', fah.passkey = passkey);
-
-    message_display('Identity changes saved');
+  if (fah.user != null)
     stats_load();
-  }
 }
 
+(function ($) {
+  $.fn.dialogNoClose = function () {
+     return this.each(function () {
+        // hide the close button and prevent ESC key from closing
+        $(this).closest(".ui-dialog").find(".ui-dialog-titlebar-close").hide();
+        $(this).dialog("option", "closeOnEscape", false);
+     });
+  };
+})(jQuery)
 
 // Init ************************************************************************
 $(function () {
@@ -1323,13 +1268,14 @@ $(function () {
   // Open all links in new tab
   $('a').attr('target', '_blank');
 
-  // Passkey field on hover show-hide
-  $('input.passkey').hover(function() {$(this).attr('type', 'text');},
-                           function() {$(this).attr('type', 'password');});
-
   // Restore state
   if (config_get('paused')) pause_folding(false);
   load_identity();
+
+  if (fah.user == null) {
+    $('#no-registration-dialog').dialog({modal:true, closeOnEscape: false}).dialogNoClose();
+    return;
+  }
 
   // Power slider
   power_init();
@@ -1343,9 +1289,6 @@ $(function () {
 
   // Dialogs
   $('a.dialog-link').click(dialog_open_event);
-
-  // Save identity
-  $('.save-id').click(save_identity);
 
   // Share Links
   var share_url = 'http%3A%2F%2Fnacl.foldingathome.org%2F';
