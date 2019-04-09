@@ -44,9 +44,9 @@ p {padding: 1em 0;}
 }
 
 body {
-    background: #5875a0;
-    font-family: 'PT Sans', sans-serif;
+    background-color: #ffffff;
     font-size: 12pt;
+    font-family: 'Nunito', sans-serif;
 }
 
 .message {
@@ -89,10 +89,9 @@ div.what {
 #panel {
     width: 900px;
     margin: 0 auto;
-    background: #eee;
+    background: #ffffff;
     color: #444;
-    border: 3px solid #444;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, .6);
+    box-shadow: 0 1.5rem 3rem 8px rgba(0, 0, 0, .1);
 }
 
 #panel-header {
@@ -381,28 +380,26 @@ a.desktop {color: #42c0fb;}
 
 .folding-start .button, .folding-stop .button {
     color: #fff;
-    font-size: 32px;
+    font-size: 2rem;
     font-weight: bold;
     width: 100%;
     text-align: center;
-    border: 2px solid #303031;
-    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
     -moz-border-radius: 0.3em;
     -webkit-border-radius: 0.3em;
-    border-radius: 0.3em;
+    border-radius: 0.2em;
     cursor: pointer;
     clear: left;
+    padding-top: 0.15em;
+    padding-bottom: 0.15em;
 }
 
 .folding-start .button {
-    background: url('../images/button_bg.png') repeat-x 0 0;
     background-color: #46a95f;
 }
 
 .folding-start .button:hover {background-color: #2c9345;}
 
 .folding-stop .button {
-    background: url('../images/button_bg.png') repeat-x 0 0;
     background-color: #e03131;
 }
 
@@ -544,4 +541,11 @@ img.icon {float: right;}
     font-weight: normal;
     color: #222;
     font-size: 80%;
+}
+
+.navbar{
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
 }
