@@ -42,7 +42,6 @@ var fah = {
   min_delay: 15,
   max_delay: 15 * 60,
 
-  micro: false,
   pausing: false,
   paused: false,
   finish: false,
@@ -424,14 +423,14 @@ function module_error(event) {
 
 // Config **********************************************************************
 function config_key(name) {
-  return 'fah_' + (fah.micro ? 'micro_' : '') + name;
+  return 'fah_' + name;
 }
 
 
 function config_set(key, value, expires) {
   if (typeof(expires) == 'undefined') expires = 100 * 365;
 
-  $.cookie(config_key(key), value, {expires: expires});
+  Cookies.set(config_key(key), value, {expires: expires});
 
   if (key == 'passkey') value = '********************************';
   debug('Config: ' + key + ' = ' + value);
@@ -442,7 +441,7 @@ function config_get(key, defaultValue) {
   if (typeof(defaultValue) != 'undefined' && !config_has(key))
     return defaultValue;
 
-  return $.cookie(config_key(key));
+  return Cookies.get(config_key(key));
 }
 
 
@@ -452,7 +451,7 @@ function config_has(key) {
 
 
 function config_del(key) {
-  $.removeCookie(config_key(key));
+  Cookies.remove(config_key(key));
   debug('Config: deleted ' + key);
 }
 
@@ -522,7 +521,6 @@ function stats_update(data) {
 
     if (stats.team_name) {
       team_name.append(', "').append(stats.team_name).append('", ');
-      $('#micro').attr('title', 'Folding for team ' + stats.team_name);
       fah.team_name = stats.team_name;
     }
 
@@ -630,7 +628,7 @@ function project_update(data) {
 
 
 function project_load(id) {
-  if (!id || fah.micro) return;
+  if (!id) return;
 
   if (id in fah.projects) {
     project_show(id);
@@ -711,8 +709,6 @@ function ppd_update() {
 
 
 function power_init() {
-  if (fah.micro) return;
-
   var slider = $('#slider');
   slider.slider({
     min: 1, max: 3, range: "min", value: 1,
@@ -892,7 +888,7 @@ function server_call(url, data, success, error, upload, download) {
   if (typeof data == 'undefined') data = {};
   data.version = fah.version;
   data.type = 'NACL';
-  data.subtype = fah.micro ? 'NACL_MICRO' : 'NACL_FULL';
+  data.subtype = 'NACL_FULL';
   data.os = 'NACL';
   data.user = fah.user;
   data.team = fah.team;
@@ -1248,8 +1244,7 @@ function load_identity() {
   try {
     var url_team = parseInt(get_query('team'));
     if (url_team) {
-      if (fah.micro) change_teams();
-      else if (!config_has('team')) config_set('team', url_team);
+      if (!config_has('team')) config_set('team', url_team);
       else if (url_team != parseInt(config_get('team')))
         dialog_open('change-teams', false, [
           {text: 'Yes, please', click: change_teams},
@@ -1257,8 +1252,6 @@ function load_identity() {
         ]);
     }
   } catch (e) {} // Ignore
-
-  if (fah.micro) return;
 
   if (config_has('user')) {
     $('input.user').val(fah.user = config_get('user'));
@@ -1281,7 +1274,6 @@ function load_identity() {
 
 function save_identity(e) {
   if (typeof e != 'undefined') e.preventDefault();
-  if (fah.micro) return;
 
   var errors = []
 
@@ -1318,8 +1310,6 @@ function save_identity(e) {
 
 // Init ************************************************************************
 $(function () {
-  fah.micro = 0 < $('#micro').length;
-
   // Make sure there is only one instance running
   intercom_init();
 
@@ -1367,22 +1357,21 @@ $(function () {
                         share_url + '&t=' + share_text});
 
   // Catch exit
-  if (!fah.micro)
-    window.onbeforeunload = function (e) {
-      if (fah.paused || typeof fah.wu == 'undefined')
-        return;
+  window.onbeforeunload = function (e) {
+    if (fah.paused || typeof fah.wu == 'undefined')
+      return;
 
-      var message = 'If you choose to stay on this page Folding@home ' +
-          'will finish its current work and then pause.  You can then ' +
-          'leave with out losing any work.';
+    var message = 'If you choose to stay on this page Folding@home ' +
+        'will finish its current work and then pause.  You can then ' +
+        'leave with out losing any work.';
 
-      fah.finish = true;
-      message_display('Finishing current work unit', 30);
+    fah.finish = true;
+    message_display('Finishing current work unit', 30);
 
-      e = e || window.event;
-      if (e) e.returnValue = message; // For IE and Firefox
-      return message; // For Safari
-    };
+    e = e || window.event;
+    if (e) e.returnValue = message; // For IE and Firefox
+    return message; // For Safari
+  };
 
   if (window.chrome) {
     // Get Chrome version
@@ -1408,45 +1397,7 @@ $(function () {
     core.addEventListener('crash', module_exit, true);
 
     module_insert();
-
-  } else if (fah.micro) {
-    stats_load();
-    $('#micro #control')
-      .html($('<a>')
-            .attr('href', '//google.com/chrome')
-            .append($('<img>')
-                    .attr({src: 'images/chrome.png',
-                           width: '24px'})
-                    .css('float', 'left'))
-            .append('Requires Google Chrome')
-           )
-      .css({'font-weight': 'bold', 'top': '0px',
-            'line-height': '0.9em', 'font-size': '9pt'});
-
   } else dialog_open_fatal('requires-chrome');
-
-  if (fah.micro) {
-    // User colors
-    var bg = get_query('bg');
-    if (typeof bg != 'undefined')
-      $('#micro').css('background-color', '#' + bg);
-
-    var fg = get_query('fg');
-    if (typeof fg != 'undefined')
-      $('#micro').css('color', '#' + fg);
-
-    // Power
-    var power = get_query('power');
-    if (typeof power != 'undefined') power_set(power);
-
-    // Team
-    if (!fah.team) {
-      $('#micro-points').css('display', 'none');
-      $('#micro').css('height', '48px');
-    }
-
-    intercom_emit('hello');
-  }
 
   // Google analytics
   _uacct = "UA-2993490-3";
