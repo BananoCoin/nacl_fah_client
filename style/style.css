@@ -31,7 +31,8 @@ html * {
 
 a {
     outline: none;
-    color: #8e0028;
+    color: #FD8105;
+    font-weight: 700;
 }
 
 a:hover {text-decoration: none;}
@@ -131,16 +132,24 @@ a.button {
     border-radius: 5px;
     padding: 0.1em 0.2em;
     line-height: 1.5em;
+    -webkit-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
 }
 
-a.button:hover {background: #ddd;}
+a.button:hover {
+    background: #FFE6CC;
+}
 
 #menu .google-button {
     position: relative;
     top: 5px;
 }
 
-a.desktop {color: #42c0fb;}
+a.desktop {
+    color: #FD8105;
+    padding: 1rem;
+}
 
 #menu .desktop img {
     width: 16px;
@@ -236,7 +245,7 @@ a.desktop {color: #42c0fb;}
 }
 
 #status-image.paused, #status-image.finished {
-    background: #fff276;
+    background: #FFE6CC;
 }
 
 #status-image.paused div:after, #status-image.finished div:after {
@@ -286,27 +295,27 @@ a.desktop {color: #42c0fb;}
 }
 
 #progress {
-    border: 1px solid black;
-    border-radius: 10px;
+    border: 2px solid #FD8105;;
+    border-radius: 0.3rem;
     background: #fff;
     overflow: hidden;
     margin-bottom: 1em;
 }
 
 #progress div {
-    height: 1.25em;
+    height: 1.5em;
     width: 0;
     margin-left: -9px;
     text-align: right;
-    background: #7a97c2;
+    background: #FD8105;
     font-weight: bold;
-    padding: 2px 2px 2px 10px;
+    padding: 0.5rem 0.5rem 0.5rem 1rem
 }
 
 #progress div.paused {
     width: 100%;
     text-align: center;
-    background: #fff276;
+    background: #FFE6CC;
 }
 
 #status-text {font-weight: bold;}
@@ -389,21 +398,55 @@ a.desktop {color: #42c0fb;}
     border-radius: 0.2em;
     cursor: pointer;
     clear: left;
-    padding-top: 0.15em;
-    padding-bottom: 0.15em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
 }
 
 .folding-start .button {
-    background-color: #46a95f;
+    background-color: #FD8105;
+    -webkit-box-shadow: 0 0.4rem 0.8rem -0.25rem rgba(253, 129, 5, 0.5);
+    -moz-box-shadow: 0 0.4rem 0.8rem -0.25rem rgba(253, 129, 5, 0.5);
+    box-shadow: 0 0.4rem 0.8rem -0.25rem rgba(253, 129, 5, 0.5);
+    -webkit-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+    -webkit-transform:translate(0,0);
+    -ms-transform:translate(0,0);
+        transform:translate(0,0);
 }
 
-.folding-start .button:hover {background-color: #2c9345;}
+.folding-start .button:hover {
+    background-color: #E87400;
+    -webkit-box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(253, 129, 5, 0.3);
+    -moz-box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(253, 129, 5, 0.3);
+    box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(253, 129, 5, 0.3);
+    -webkit-transform:translate(0,-0.25rem);
+    -ms-transform:translate(0,0, -0.25rem);
+        transform:translate(0,0, -0.25rem);
+}
 
 .folding-stop .button {
-    background-color: #e03131;
+    background-color: #47494F;
+    -webkit-box-shadow: 0 0.4rem 0.8rem -0.25rem rgba(71, 73, 79, 0.5);
+    -moz-box-shadow: 0 0.4rem 0.8rem -0.25rem rgba(71, 73, 79, 0.5);
+    box-shadow: 0 0.4rem 0.8rem -0.25rem rgba(71, 73, 79, 0.5);
+    -webkit-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+    -webkit-transform:translate(0,0);
+    -ms-transform:translate(0,0);
+        transform:translate(0,0);
 }
 
-.folding-stop .button:hover {background-color: #ca2b2c;}
+.folding-stop .button:hover {
+    background-color: #2F3033;
+    -webkit-box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(71, 73, 79, 0.4);
+    -moz-box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(71, 73, 79, 0.4);
+    box-shadow: 0 0.75rem 1.5rem -0.25rem rgba(71, 73, 79, 0.4);
+    -webkit-transform:translate(0, -0.25rem);
+    -ms-transform:translate(0, -0.25rem);
+        transform:translate(0, -0.25rem);
+}
 
 #project {
     border-radius: 10px;
