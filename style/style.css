@@ -549,3 +549,7 @@ img.icon {float: right;}
     margin-top: 2rem;
     margin-bottom: 1.5rem;
 }
+
+.ui-widget-content{
+    border: none !important;
+}
