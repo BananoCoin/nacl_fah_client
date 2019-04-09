@@ -1221,7 +1221,7 @@ function unpause_folding() {
 function load_identity() {
   // Handle URL user
   try {
-    var url_user = parseInt(get_query('user'));
+    var url_user = get_query('user');
     if (url_user) {
       config_set('user', url_user);
     }
