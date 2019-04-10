@@ -485,7 +485,7 @@ function stats_update(data) {
   debug('stats:', stats);
 
   var user = $('<span>');
-  //var team = $('<team>');
+  var team = $('<team>');
 
   if (fah.user.toLowerCase() == 'anonymous')
     user.append('Choose a name and earn points.');
@@ -505,38 +505,38 @@ function stats_update(data) {
 
     user.append(' points.');
   }
+  
+  fah.team_name = '' + fah.team;
+  var team_name;
+  if (typeof stats.team_url != 'undefined') {
+    var url = stats.team_url;
+    if (!/^(https?:)?\/\//.test(url)) url = 'http://' + url;
+    team_name = $('<a>').attr({target: '_blank', href: url});
 
-  //fah.team_name = '' + fah.team;
-  //var team_name;
-  //if (typeof stats.team_url != 'undefined') {
-    //var url = stats.team_url;
-    //if (!/^(https?:)?\/\//.test(url)) url = 'http://' + url;
-    //team_name = $('<a>').attr({target: '_blank', href: url});
+  } else team_name = $('<span>');
 
-  //} else team_name = $('<span>');
+  team_name.append('Your team');
 
-  //team_name.append('Your team');
+  if (stats.team_name) {
+    team_name.append(', "').append(stats.team_name).append('", ');
+    fah.team_name = stats.team_name;
+  }
 
-  //if (stats.team_name) {
-    //team_name.append(', "').append(stats.team_name).append('", ');
-    //fah.team_name = stats.team_name;
-  //}
+  team.append(team_name);
 
-  //team.append(team_name);
+  team.append(' has earned ');
 
-  //team.append(' has earned ');
+  $('<span>')
+    .addClass('team-points')
+    .text(human_number(stats.team_total))
+    .appendTo(team);
 
-  //$('<span>')
-    //.addClass('team-points')
-    //.text(human_number(stats.team_total))
-    //.appendTo(team);
+  team.append(' points.');
 
-  //team.append(' points.');
-
-  //$('#points').html(user).append(' ').append(team);
-  //$('.team-points')
-    //.text(human_number(stats.team_total))
-    //.attr('title', 'Total points earned by team ' + fah.team_name);
+  $('#points').html(user).append(' ').append(team);
+  $('.team-points')
+    .text(human_number(stats.team_total))
+    .attr('title', 'Total points earned by team ' + fah.team_name);
 }
 
 
