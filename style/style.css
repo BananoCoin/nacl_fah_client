@@ -48,6 +48,10 @@ body {
     background-color: #ffffff;
     font-size: 12pt;
     font-family: 'Nunito', sans-serif;
+    background-image: url("../images/bg-hero.svg");
+    background-position: 100% 0%;
+    background-repeat: no-repeat;
+    background-size: 45%;
 }
 
 .message {
@@ -173,17 +177,13 @@ a.desktop {
 .user-points {
     font-size: 150%;
     font-weight: 900;
-    color: #fb6436;
+    color: #FD8105;
 }
 
 .team-points {
-    color: #ff5315;
+    color: #FD8105;
     font-weight: bold;
     font-size: 120%;
-}
-
-#status {
-    margin-top: -10px;
 }
 
 #status-image {
