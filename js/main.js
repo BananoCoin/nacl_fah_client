@@ -455,91 +455,6 @@ function config_del(key) {
   debug('Config: deleted ' + key);
 }
 
-
-// Stats functions *************************************************************
-function stats_load() {
-  if (fah.user.toLowerCase() == 'anonymous' && fah.team == 0) {
-    $('#points').text('Choose a name and earn points. ' +
-                      'Join a team and compete for fun.');
-    return;
-  }
-
-  $.ajax({
-    url: fah.stats_url,
-    type: 'GET',
-    data: {'user': fah.user, 'team': fah.team, 'passkey': fah.passkey,
-           'version': fah.version},
-    cache: false,
-    dataType: 'jsonp',
-    success: stats_update
-  });
-}
-
-
-function stats_update(data) {
-  if (data[0].length != 2 || data[0][0] != 'stats') {
-    debug("Unexpected stats response:", data);
-    return;
-  }
-  var stats = data[0][1];
-  debug('stats:', stats);
-
-  var user = $('<span>');
-  var team = $('<team>');
-
-  if (fah.user.toLowerCase() == 'anonymous')
-    user.append('Choose a name and earn points.');
-
-  else {
-    $('<a>')
-      .attr({href: stats.url, target: '_blank'})
-      .text('You')
-      .appendTo(user);
-
-    user.append(' have earned ');
-
-    $('<span>')
-      .addClass('user-points')
-      .text(human_number(stats.earned))
-      .appendTo(user);
-
-    user.append(' points.');
-  }
-  
-  fah.team_name = '' + fah.team;
-  var team_name;
-  if (typeof stats.team_url != 'undefined') {
-    var url = stats.team_url;
-    if (!/^(https?:)?\/\//.test(url)) url = 'http://' + url;
-    team_name = $('<a>').attr({target: '_blank', href: url});
-
-  } else team_name = $('<span>');
-
-  team_name.append('Your team');
-
-  if (stats.team_name) {
-    team_name.append(', "').append(stats.team_name).append('", ');
-    fah.team_name = stats.team_name;
-  }
-
-  team.append(team_name);
-
-  team.append(' has earned ');
-
-  $('<span>')
-    .addClass('team-points')
-    .text(human_number(stats.team_total))
-    .appendTo(team);
-
-  team.append(' points.');
-
-  $('#points').html(user).append(' ').append(team);
-  $('.team-points')
-    .text(human_number(stats.team_total))
-    .attr('title', 'Total points earned by team ' + fah.team_name);
-}
-
-
 // Projects ********************************************************************
 function project_show(id) {
   if (id in fah.projects)
@@ -1082,7 +997,7 @@ function finish_wu(results, signature, data) {
   fah.wu_results_errors = 0;
   return_ws();
   backoff_reset('ws');
-  stats_load();
+
 }
 
 
@@ -1228,7 +1143,7 @@ function load_identity() {
   } catch (e) {} // Ignore
 
   if (config_has('user')) {
-    $('input.user').val(fah.user = config_get('user'));
+    $('#username').html(fah.user = config_get('user'));
     config_set('user', config_get('user')); // Extend expiration
   }
 
@@ -1238,9 +1153,6 @@ function load_identity() {
     $('input.passkey').val(fah.passkey = config_get('passkey'));
     config_set('passkey', config_get('passkey')); // Extend expiration
   }
-
-  if (fah.user != null)
-    stats_load();
 }
 
 (function ($) {
@@ -1270,6 +1182,7 @@ $(function () {
 
   // Restore state
   if (config_get('paused')) pause_folding(false);
+
   load_identity();
 
   if (fah.user == null) {

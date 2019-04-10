@@ -35,6 +35,11 @@ a {
     font-weight: 700;
 }
 
+.bold {
+    color: #FD8105;
+    font-weight: 700;
+}
+
 a:hover {text-decoration: none;}
 
 p {padding: 1em 0;}
