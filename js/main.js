@@ -1143,7 +1143,8 @@ function load_identity() {
   } catch (e) {} // Ignore
 
   if (config_has('user')) {
-    $('#username').html(fah.user = config_get('user'));
+    fah.user = config_get('user')
+    $('#username').html(config_get('user'));
     config_set('user', config_get('user')); // Extend expiration
   }
 
