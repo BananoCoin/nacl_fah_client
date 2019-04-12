@@ -1158,6 +1158,32 @@ function load_identity() {
   }
 }
 
+function save_identity(e) {
+  if (typeof e != 'undefined') e.preventDefault();
+  if (fah.micro) return;
+
+  var errors = []
+
+  var passkey = $('input.passkey').val().trim();
+  if (passkey != '' && !/^[a-fA-F0-9]{32}$/.test(passkey))
+    errors.push('passkey');
+
+  if (errors.length) {
+    $('#invalid-id-dialog div').css({display: 'none'});
+
+    for (var i = 0; i < errors.length; i++)
+      $('#invalid-id-dialog .' + errors[i]).css({display: 'block'});
+
+    dialog_open('invalid-id');
+
+  } else if (fah.passkey != passkey) {
+    config_set('passkey', fah.passkey = passkey);
+
+    message_display('Identity changes saved');
+    stats_load();
+  }
+}
+
 (function ($) {
   $.fn.dialogNoClose = function () {
      return this.each(function () {
@@ -1185,6 +1211,7 @@ $(function () {
 
   // Restore state
   if (config_get('paused')) pause_folding(false);
+  fah.user = 'bb'
 
   load_identity();
 
@@ -1205,6 +1232,8 @@ $(function () {
 
   // Dialogs
   $('a.dialog-link').click(dialog_open_event);
+  // Save identity
+  $('.save-id').click(save_identity);
 
   // Share Links
   var share_url = 'http%3A%2F%2Fnacl.foldingathome.org%2F';
