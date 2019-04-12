@@ -1145,7 +1145,7 @@ function load_identity() {
 
   if (config_has('user')) {
     fah.user = config_get('user')
-    $('#username').html(config_get('user'));
+    $('#username').text(config_get('user'));
     config_set('user', config_get('user')); // Extend expiration
   }
 
