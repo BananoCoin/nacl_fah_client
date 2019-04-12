@@ -1211,7 +1211,6 @@ $(function () {
 
   // Restore state
   if (config_get('paused')) pause_folding(false);
-  fah.user = 'bb'
 
   load_identity();
 
