@@ -998,7 +998,7 @@ function finish_wu(results, signature, data) {
   fah.wu_results_errors = 0;
   return_ws();
   backoff_reset('ws');
-
+  stats_load();
 }
 
 
@@ -1133,6 +1133,86 @@ function unpause_folding() {
 }
 
 
+// Stats functions *************************************************************
+function stats_load() {
+  $.ajax({
+    url: fah.stats_url,
+    type: 'GET',
+    data: {'user': fah.user, 'team': fah.team, 'passkey': fah.passkey,
+           'version': fah.version},
+    cache: false,
+    dataType: 'jsonp',
+    success: stats_update
+  });
+}
+
+function stats_update(data) {
+  if (data[0].length != 2 || data[0][0] != 'stats') {
+    debug("Unexpected stats response:", data);
+    return;
+  }
+  var stats = data[0][1];
+  debug('stats:', stats);
+
+  var user = $('<span>');
+  var team = $('<team>');
+
+  if (fah.user.toLowerCase() == 'anonymous')
+    user.append('Choose a name and earn points.');
+
+  else {
+    $('<a>')
+      .attr({href: stats.url, target: '_blank'})
+      .text('You')
+      .appendTo(user);
+
+    user.append(' have earned ');
+
+    $('<span>')
+      .addClass('user-points')
+      .text(human_number(stats.earned))
+      .appendTo(user);
+
+    user.append(' points.');
+  }
+
+  fah.team_name = '' + fah.team;
+  if (fah.team == 0) team.append('Consider joining a team.');
+  else {
+    var team_name;
+    if (typeof stats.team_url != 'undefined') {
+      var url = stats.team_url;
+      if (!/^(https?:)?\/\//.test(url)) url = 'http://' + url;
+      team_name = $('<a>').attr({target: '_blank', href: url});
+
+    } else team_name = $('<span>');
+
+    team_name.append('Your team');
+
+    if (stats.team_name) {
+      team_name.append(', "').append(stats.team_name).append('", ');
+      $('#micro').attr('title', 'Folding for team ' + stats.team_name);
+      fah.team_name = stats.team_name;
+    }
+
+    team.append(team_name);
+
+    team.append(' has earned ');
+
+    $('<span>')
+      .addClass('team-points')
+      .text(human_number(stats.team_total))
+      .appendTo(team);
+
+    team.append(' points.');
+  }
+
+  $('#points').html(user).append(' ').append(team);
+  $('.team-points')
+    .text(human_number(stats.team_total))
+    .attr('title', 'Total points earned by team ' + fah.team_name);
+}
+
 // Identity ********************************************************************
 function load_identity() {
   // Handle URL user
@@ -1146,7 +1226,6 @@ function load_identity() {
   if (config_has('user')) {
     fah.user = config_get('user')
     $('#username').text(config_get('user'));
-    $('#donorlink').attr('href', `https://stats.foldingathome.org/donor/${config_get('user')}`);
     config_set('user', config_get('user')); // Extend expiration
   }
 
@@ -1155,6 +1234,10 @@ function load_identity() {
   if (config_has('passkey')) {
     $('input.passkey').val(fah.passkey = config_get('passkey'));
     config_set('passkey', config_get('passkey')); // Extend expiration
+  }
+
+  if (fah.user != null) {
+    stats_load();
   }
 }
 
