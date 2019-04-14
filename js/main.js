@@ -323,6 +323,9 @@ function module_loading() {
   debug('Module loading');
   status_set('downloading', 'Downloading the Folding@home software in your ' +
              'Web browser.  On your first visit this can take a while.');
+  if (!$('#foldingAnimation').attr("src").includes('folding-animation-downloading')) {
+    $('#foldingAnimation').attr("src", 'images/folding-animation-downloading.gif');
+  }
   return false;
 }
 
@@ -897,6 +900,9 @@ function request_id_error(jqXHR, status, error) {
 
 function request_assignment() {
   status_set('downloading', 'Requesting a work server assignment.');
+  if (!$('#foldingAnimation').attr("src").includes('folding-animation-downloading')) {
+    $('#foldingAnimation').attr("src", 'images/folding-animation-downloading.gif');
+  }
   delete fah.results;
 
   var data = {
@@ -945,6 +951,9 @@ function request_wu(data) {
   fah.as_cert = data[3];
 
   status_set('downloading', 'Downloading a work unit.');
+  if (!$('#foldingAnimation').attr("src").includes('folding-animation-downloading')) {
+    $('#foldingAnimation').attr("src", 'images/folding-animation-downloading.gif');
+  }
 
   progress_start(1);
   ws_call(fah.ws, 'assign', {assignment: assign, signature: data[2],
@@ -968,6 +977,9 @@ function start_wu(data) {
   fah.wu_start = new Date().valueOf();
 
   status_set('running', 'Starting work unit.');
+  if (!$('#foldingAnimation').attr("src").includes('folding-animation-running')) {
+    $('#foldingAnimation').attr("src", 'images/folding-animation-running.gif');
+  }
   progress_start(0);
   post_message(['start', JSON.stringify(wu), data[2], data[3], data[4],
                 str2ab(data[5])]);
@@ -981,6 +993,9 @@ function step_wu(total, count) {
   status_set('running', (fah.finish) ?
              'Calculations underway; then finishing.' :
              'Calculations underway.');
+  if (!$('#foldingAnimation').attr("src").includes('folding-animation-running')) {
+    $('#foldingAnimation').attr("src", 'images/folding-animation-running.gif');
+  }
   fah.progress_total = total;
   var eta = (total - count) / 10; // TODO
   progress_update(count, eta);
@@ -1089,6 +1104,9 @@ function folding_unpaused() {
 
 
 function folding_paused() {
+  if (!$('#foldingAnimation').attr("src").includes('folding-animation-paused')) {
+    $('#foldingAnimation').attr("src", 'images/folding-animation-paused.png');
+  }
   if (fah.paused) return;
 
   if (fah.finish)
