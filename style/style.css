@@ -600,3 +600,12 @@ img.icon {float: right;}
 .ui-widget-content{
     border: none !important;
 }
+
+.width-100{
+    width: 100%;
+    display: block;
+}
+
+.mb-1{
+    margin-bottom: 1rem;
+}
